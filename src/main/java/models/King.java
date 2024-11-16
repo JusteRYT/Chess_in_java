@@ -12,6 +12,16 @@ public class King extends Piece {
 
     @Override
     public boolean isValidMove(int startRow, int startCol, int endRow, int endCol, Board board) {
-        return (startRow == endRow && startCol == endCol);
+        // Король может двигаться на одну клетку в любом направлении
+        int rowDiff = Math.abs(startRow - endRow);
+        int colDiff = Math.abs(startCol - endCol);
+
+        if(rowDiff > 1 || colDiff > 1) {
+            return false;
+        }
+
+        // Проверяем, не пытается ли король захватить свою фигуру
+        Piece target = board.getPiece(endRow, endCol);
+        return target == null || !target.getColor().equals(getColor());
     }
 }

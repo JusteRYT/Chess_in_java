@@ -14,5 +14,15 @@ public abstract class Piece {
         return color;
     }
 
+    /**
+     * Проверяет, допустим ли ход для данной фигуры.
+     *
+     * @param startRow Начальная строка
+     * @param startCol Начальный столбец
+     * @param endRow Конечная строка
+     * @param endCol Конечный столбец
+     * @param board Текущее состояние доски
+     * @return true, если ход допустим
+     */
     public abstract boolean isValidMove(int startRow, int startCol, int endRow, int endCol, Board board);
 }

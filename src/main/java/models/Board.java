@@ -78,4 +78,20 @@ public class Board {
         String type = piece.getClass().getSimpleName().substring(0, 1).toUpperCase();
         return piece.getColor().equals("white") ? type : type.toLowerCase();
     }
+
+    public boolean movePiece(int startRow, int startCol, int endRow, int endCol) {
+        Piece piece = getPiece(startRow, startCol);
+        if(piece == null) {
+            System.out.println("На выбранной клетке нет фигуры.");
+            return false;
+        }
+        if(!piece.isValidMove(startRow, startCol,endRow,endCol,this)){
+            System.out.println("Недопустимый ход для фигуры: " + piece.getClass().getSimpleName());
+            return false;
+        }
+        // Выполняем ход
+        setPiece(endRow, endCol, piece);
+        setPiece(startRow, startCol, null);
+        return true;
+    }
 }

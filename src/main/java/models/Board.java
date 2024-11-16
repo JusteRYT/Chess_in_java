@@ -80,18 +80,73 @@ public class Board {
     }
 
     public boolean movePiece(int startRow, int startCol, int endRow, int endCol) {
+
+        //Проверяем, существует ли фигура на начальной клетке
         Piece piece = getPiece(startRow, startCol);
         if(piece == null) {
             System.out.println("На выбранной клетке нет фигуры.");
             return false;
         }
+
+        //Проверяем, корректен ли ход
         if(!piece.isValidMove(startRow, startCol,endRow,endCol,this)){
             System.out.println("Недопустимый ход для фигуры: " + piece.getClass().getSimpleName());
             return false;
         }
-        // Выполняем ход
+        // Сохраняем текущее состояние для проверки шаха
+        Piece targetPiece = getPiece(endRow, endCol);
         setPiece(endRow, endCol, piece);
         setPiece(startRow, startCol, null);
+
+        // Проверяем, не будет ли король под шахом после хода
+        if(isKingInCheck(piece.getColor())){
+            // Отменяем ход
+            setPiece(startRow, startCol, piece);
+            setPiece(endRow, endCol, targetPiece);
+            System.out.println("Ход оставляет короля под шахом!");
+            return false;
+        }
+
         return true;
+    }
+
+    /**
+     * Проверяет, находится ли король определенного цвета под угрозой
+     *
+     * @param kingColor цвет короля ("white" или "black")
+     * @return true, если король под угрозой
+     */
+    public boolean isKingInCheck(String kingColor){
+        int kingRow = -1, kingCol = -1;
+
+        // Ищем позицию короля
+        for(int row = 0; row < 8; row++) {
+            for(int col = 0; col < 8; col++) {
+                Piece piece = board[row][col];
+                if(piece instanceof King && piece.getColor().equals(kingColor)){
+                    kingRow = row;
+                    kingCol = col;
+                    break;
+                }
+            }
+        }
+
+        // Если король не найден (ошибка в логике)
+        if(kingRow == -1 || kingCol == -1){
+            throw new IllegalStateException("Король цвета " + kingColor + " не найден!");
+        }
+
+        // Проверяем, может ли любая фигура противника атаковать короля
+        for(int row = 0; row < 8; row++) {
+            for(int col = 0; col < 8; col++) {
+                Piece piece = board[row][col];
+                if(piece != null && !piece.getColor().equals(kingColor)){
+                    if(piece.isValidMove(row,col,kingRow,kingCol,this)){
+                        return true; //Король под атакой
+                    }
+                }
+            }
+        }
+        return false; // Король в безопасности
     }
 }
